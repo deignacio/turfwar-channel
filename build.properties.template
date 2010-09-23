@@ -14,6 +14,8 @@ playerglobal.version = 10
 FLEX_HOME = ${flex.sdk.home}
 
 flex.source = ${basedir}/src
+flex.lib = ${basedir}/lib
+flex.assets = ${basedir}/assets
 flex.main.file = ${ant.project.name}.as
 flex.main = ${flex.source}/${flex.main.file}
 flex.lib = ${basedir}/lib

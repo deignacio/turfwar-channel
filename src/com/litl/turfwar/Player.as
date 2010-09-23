@@ -23,6 +23,7 @@ package com.litl.turfwar {
         public function associateRemote(remote:IRemoteControl):void {
             if (remote.hasAccelerometer) {
                 _acc = remote.accelerometer;
+                resume();
             }
         }
 

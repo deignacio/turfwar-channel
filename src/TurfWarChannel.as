@@ -1,13 +1,16 @@
 package
 {
-    import com.litl.turfwar.RemoteControlModel;
-    import com.litl.turfwar.view.ViewBase;
     import com.litl.sdk.enum.View;
     import com.litl.sdk.enum.ViewDetails;
     import com.litl.sdk.event.*;
     import com.litl.sdk.message.*;
     import com.litl.sdk.richinput.*;
     import com.litl.sdk.service.LitlService;
+    import com.litl.turfwar.RemoteControlModel;
+    import com.litl.turfwar.enum.GameSpeed;
+    import com.litl.turfwar.view.CardView;
+    import com.litl.turfwar.view.PauseOverlay;
+    import com.litl.turfwar.view.ViewBase;
 
     import flash.display.DisplayObject;
     import flash.display.Sprite;
@@ -16,7 +19,6 @@ package
     import flash.events.Event;
     import flash.events.TimerEvent;
     import flash.utils.Dictionary;
-    import flash.utils.Timer;
 
     [SWF(backgroundColor="0xffffff", width="1280", height="800", frameRate="21")]
     public class TurfWarChannel extends Sprite
@@ -27,6 +29,8 @@ package
 
         protected var remoteManager:RemoteManager;
         protected var dataModel:RemoteControlModel;
+
+        protected var pauseOverlay:PauseOverlay;
 
         public function TurfWarChannel() {
             stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -45,7 +49,37 @@ package
             service.addEventListener(InitializeMessage.INITIALIZE, handleInitialize);
             service.addEventListener(ViewChangeMessage.VIEW_CHANGE, handleViewChange);
 
+            pauseOverlay = new PauseOverlay();
+            pauseOverlay.addEventListener(TimerEvent.TIMER_COMPLETE, onUnpause);
+            pauseOverlay.pause(this);
+
             service.connect("turfwar-channel", "Turf Wars", "1.0", false);
+        }
+
+        protected function unpauseGame():void {
+            if (!dataModel.running) {
+                var view:Sprite = (currentView == null) ? this : currentView;
+                if (dataModel.remoteIds.length > 0) {
+                    pauseOverlay.unpause(view);
+                } else {
+                    pauseOverlay.pause(view);
+                    pauseOverlay.setMessage("game paused\nno players!");
+                }
+            }
+        }
+
+        protected function onUnpause(e:TimerEvent):void {
+            trace("unpause complete!");
+            dataModel.unpause();
+        }
+
+        protected function pauseGame():void {
+            var view:Sprite = (currentView == null) ? this : currentView;
+            pauseOverlay.pause(view);
+            if (dataModel.remoteIds.length == 0) {
+                pauseOverlay.setMessage("game paused\nno players!");
+            }
+            dataModel.pause();
         }
 
         /**
@@ -78,8 +112,12 @@ package
             if (remote != null && remote.hasAccelerometer) {
                 if (e.remoteEnabled) {
                     dataModel.handleRemoteConnect(remote);
+                    unpauseGame();
                 } else {
                     dataModel.handleRemoteDisconnect(remote);
+                    if (dataModel.remoteIds.length == 0) {
+                        pauseGame();
+                    }
                 }
             }
         }
@@ -103,8 +141,13 @@ package
 
             currentView = views[newView] as ViewBase;
 
-            if (currentView == null)
-                currentView = new ViewBase();
+            if (currentView == null) {
+                if (newView == View.CARD) {
+                    currentView = new CardView();
+                } else {
+                    currentView = new ViewBase();
+                }
+            }
 
             views[newView] = currentView;
 
@@ -112,6 +155,12 @@ package
 
             if (!contains(currentView))
                 addChild(currentView);
+
+            if (newDetails != ViewDetails.NORMAL || newView == View.CARD) {
+                pauseGame();
+            } else {
+                unpauseGame();
+            }
         }
     }
 }
