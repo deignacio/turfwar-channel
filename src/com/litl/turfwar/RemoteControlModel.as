@@ -1,16 +1,20 @@
 package com.litl.turfwar {
     import com.litl.sdk.richinput.IRemoteControl;
+    import com.litl.turfwar.enum.ArenaSize;
     import com.litl.turfwar.enum.GameSpeed;
 
+    import flash.events.Event;
+    import flash.events.EventDispatcher;
     import flash.events.TimerEvent;
     import flash.utils.Dictionary;
     import flash.utils.Timer;
 
-    public class RemoteControlModel {
+    public class RemoteControlModel extends EventDispatcher {
         private var nextPlayerId:int;
 
         public var remoteIds:Array;
         public var players:Dictionary;
+        public var arena:ArenaModel;
         private var _speed:GameSpeed;
         private var gameTimer:Timer;
 
@@ -23,6 +27,8 @@ package com.litl.turfwar {
             players = new Dictionary();
 
             nextPlayerId = Player.INVALID_PLAYER_ID;
+
+            arena = new ArenaModel(ArenaSize.MEDIUM);
         }
 
         public function get speed():GameSpeed {
@@ -68,7 +74,7 @@ package com.litl.turfwar {
             for (var i:int = 0; i < remoteIds.length; i++) {
                 var remoteId:String = remoteIds[i];
                 var player:Player = players[remoteId];
-                player.resume();
+                func(player);
             }
         }
 
@@ -77,12 +83,15 @@ package com.litl.turfwar {
             remoteIds.splice(remoteIds.indexOf(remoteId), 1);
 
             var player:Player = players[remoteId];
+            player.removeEventListener("crashed", onCrash);
+            arena.leaveArena(player);
             player.destroy();
         }
 
         public function handleRemoteConnect(remote:IRemoteControl):void {
             var remoteId:String = remote.id;
             if (remoteIds.indexOf(remoteId) == -1) {
+
                 remoteIds.push(remoteId);
 
                 if (!players.hasOwnProperty(remoteId)) {
@@ -91,11 +100,21 @@ package com.litl.turfwar {
 
                 var player:Player = players[remoteId];
                 player.associateRemote(remote);
+                player.addEventListener("crashed", onCrash);
+                arena.enterArena(player);
             }
         }
 
+        protected function onCrash(e:Event):void {
+            dispatchEvent(e);
+        }
+
         public function handleTick(e:TimerEvent):void {
-            // TODO: implement this
+            for (var i:int = 0; i < remoteIds.length; i++) {
+                var remoteId:String = remoteIds[i];
+                var player:Player = players[remoteId];
+                arena.movePlayer(player);
+            }
         }
     }
 }
