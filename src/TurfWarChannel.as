@@ -6,6 +6,8 @@ package
     import com.litl.sdk.message.*;
     import com.litl.sdk.richinput.*;
     import com.litl.sdk.service.LitlService;
+    import com.litl.turfwar.RemoteControlModel;
+    import com.litl.turfwar.event.NoPlayersEvent;
     import com.litl.turfwar.view.CardView;
     import com.litl.view.ViewBase;
 
@@ -29,6 +31,8 @@ package
         protected var currentView:ViewBase;
         protected var views:Dictionary;
 
+        protected var dataModel:RemoteControlModel;
+
         public function TurfWarChannel() {
             stage.scaleMode = StageScaleMode.NO_SCALE;
             stage.align = StageAlign.TOP_LEFT;
@@ -39,10 +43,18 @@ package
         protected function initialize():void {
             service = new LitlService(this);
 
+            dataModel = new RemoteControlModel(service);
+            dataModel.addEventListener(NoPlayersEvent.NO_PLAYERS, onNoPlayers);
+
             service.addEventListener(InitializeMessage.INITIALIZE, handleInitialize);
             service.addEventListener(ViewChangeMessage.VIEW_CHANGE, handleViewChange);
 
             service.connect(CHANNEL_ENGINE_GUID, CHANNEL_TITLE, CHANNEL_VERSION, CHANNEL_HAS_OPTIONS);
+        }
+
+        /** if there are no more players, pause the game */
+        protected function onNoPlayers(e:NoPlayersEvent):void {
+            pauseGame();
         }
 
         /**
