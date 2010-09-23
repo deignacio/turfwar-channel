@@ -1,5 +1,6 @@
 package
 {
+    import com.litl.turfwar.RemoteControlModel;
     import com.litl.turfwar.view.ViewBase;
     import com.litl.sdk.enum.View;
     import com.litl.sdk.enum.ViewDetails;
@@ -24,6 +25,9 @@ package
         protected var currentView:ViewBase;
         protected var views:Dictionary;
 
+        protected var remoteManager:RemoteManager;
+        protected var dataModel:RemoteControlModel;
+
         public function TurfWarChannel() {
             stage.scaleMode = StageScaleMode.NO_SCALE;
             stage.align = StageAlign.TOP_LEFT;
@@ -33,6 +37,10 @@ package
 
         protected function initialize():void {
             service = new LitlService(this);
+
+            remoteManager = new RemoteManager(service);
+            dataModel = new RemoteControlModel();
+            remoteManager.addEventListener(RemoteStatusEvent.REMOTE_STATUS, handleRemoteStatus);
 
             service.addEventListener(InitializeMessage.INITIALIZE, handleInitialize);
             service.addEventListener(ViewChangeMessage.VIEW_CHANGE, handleViewChange);
@@ -63,6 +71,17 @@ package
             var viewWidth:Number = e.width;
             var viewHeight:Number = e.height;
             setView(newView, newDetails, viewWidth, viewHeight);
+        }
+
+        private function handleRemoteStatus(e:RemoteStatusEvent):void {
+            var remote:IRemoteControl = e.remote;
+            if (remote != null && remote.hasAccelerometer) {
+                if (e.remoteEnabled) {
+                    dataModel.handleRemoteConnect(remote);
+                } else {
+                    dataModel.handleRemoteDisconnect(remote);
+                }
+            }
         }
 
         /**
