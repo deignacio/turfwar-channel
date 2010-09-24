@@ -101,10 +101,10 @@ package com.litl.turfwar {
                 case ArenaDirection.RIGHT:
                     var y:Number = e.accelerationY;
                     if (y <= -1 * ACCELEROMETER_TURN_THRESHOLD) {
-                        _dir = ArenaDirection.UP;
+                        _dir = ArenaDirection.DOWN;
                         trace("player turned:  "+this);
                     } else if (y >= ACCELEROMETER_TURN_THRESHOLD) {
-                        _dir = ArenaDirection.DOWN;
+                        _dir = ArenaDirection.UP;
                         trace("player turned:  "+this);
                     }
                     break;
