@@ -115,6 +115,8 @@ package com.litl.turfwar {
                 var player:Player = players[remoteId];
                 arena.movePlayer(player);
             }
+
+            dispatchEvent(e);
         }
     }
 }

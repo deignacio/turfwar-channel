@@ -7,6 +7,7 @@ package
     import com.litl.sdk.richinput.*;
     import com.litl.sdk.service.LitlService;
     import com.litl.turfwar.RemoteControlModel;
+    import com.litl.turfwar.RemoteControlVisualiser;
     import com.litl.turfwar.enum.GameSpeed;
     import com.litl.turfwar.view.CardView;
     import com.litl.turfwar.view.PauseOverlay;
@@ -29,6 +30,7 @@ package
 
         protected var remoteManager:RemoteManager;
         protected var dataModel:RemoteControlModel;
+        protected var dataVisualiser:RemoteControlVisualiser;
 
         protected var pauseOverlay:PauseOverlay;
 
@@ -44,6 +46,8 @@ package
 
             remoteManager = new RemoteManager(service);
             dataModel = new RemoteControlModel();
+            dataVisualiser = new RemoteControlVisualiser(dataModel);
+            dataModel.addEventListener(TimerEvent.TIMER, handleTimerTick);
             remoteManager.addEventListener(RemoteStatusEvent.REMOTE_STATUS, handleRemoteStatus);
 
             service.addEventListener(InitializeMessage.INITIALIZE, handleInitialize);
@@ -57,19 +61,23 @@ package
         }
 
         protected function unpauseGame():void {
+            var view:Sprite = (currentView == null) ? this : currentView;
             if (!dataModel.running) {
-                var view:Sprite = (currentView == null) ? this : currentView;
                 if (dataModel.remoteIds.length > 0) {
                     pauseOverlay.unpause(view);
                 } else {
                     pauseOverlay.pause(view);
                     pauseOverlay.setMessage("game paused\nno players!");
                 }
+            } else {
+                dataVisualiser.drawWholeGame(view);
             }
         }
 
         protected function onUnpause(e:TimerEvent):void {
             trace("unpause complete!");
+            var view:Sprite = (currentView == null) ? this : currentView;
+            dataVisualiser.drawWholeGame(view);
             dataModel.unpause();
         }
 
@@ -105,6 +113,13 @@ package
             var viewWidth:Number = e.width;
             var viewHeight:Number = e.height;
             setView(newView, newDetails, viewWidth, viewHeight);
+        }
+
+        private function handleTimerTick(event:TimerEvent):void {
+            if (currentView != null) {
+                dataVisualiser.drawGame(currentView);
+            }
+            event.stopPropagation();
         }
 
         private function handleRemoteStatus(e:RemoteStatusEvent):void {

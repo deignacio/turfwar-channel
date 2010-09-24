@@ -72,6 +72,35 @@ package com.litl.turfwar {
             }
         }
 
+        public function getTrailPosition(player:Player):ArenaPosition {
+            if (player.position == null) {
+                return null;
+            }
+
+            var spot:int = getSpot(player.position);
+            switch (player.direction) {
+                case ArenaDirection.DOWN:
+                    spot -= size.cols;
+                    if (spot < 0) {
+                        spot += size.numSpots + 1;
+                    }
+                    break;
+                case ArenaDirection.UP:
+                    spot += size.cols;
+                    if (spot > size.numSpots) {
+                        spot -= size.numSpots + 1;
+                    }
+                    break;
+                case ArenaDirection.RIGHT:
+                    spot -= 1;
+                    break;
+                case ArenaDirection.LEFT:
+                    spot += 1;
+                    break;
+            }
+            return getPosition(spot);
+        }
+
         private function getPosition(spot:int):ArenaPosition {
             return new ArenaPosition(spot % size.cols, spot / size.cols);
         }
