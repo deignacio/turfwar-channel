@@ -2,8 +2,8 @@ package com.litl.turfwar {
     import com.litl.sdk.richinput.IRemoteControl;
     import com.litl.turfwar.enum.ArenaSize;
     import com.litl.turfwar.enum.GameSpeed;
+    import com.litl.turfwar.event.CrashEvent;
 
-    import flash.events.Event;
     import flash.events.EventDispatcher;
     import flash.events.TimerEvent;
     import flash.utils.Dictionary;
@@ -83,7 +83,7 @@ package com.litl.turfwar {
             remoteIds.splice(remoteIds.indexOf(remoteId), 1);
 
             var player:Player = players[remoteId];
-            player.removeEventListener("crashed", onCrash);
+            player.removeEventListener(CrashEvent.CRASH, onCrash);
             arena.leaveArena(player);
             player.destroy();
         }
@@ -100,12 +100,13 @@ package com.litl.turfwar {
 
                 var player:Player = players[remoteId];
                 player.associateRemote(remote);
-                player.addEventListener("crashed", onCrash);
+                player.addEventListener(CrashEvent.CRASH, onCrash);
                 arena.enterArena(player);
             }
         }
 
-        protected function onCrash(e:Event):void {
+        protected function onCrash(e:CrashEvent):void {
+            pause();
             dispatchEvent(e);
         }
 

@@ -2,8 +2,8 @@ package com.litl.turfwar {
     import com.litl.sdk.event.AccelerometerEvent;
     import com.litl.sdk.richinput.Accelerometer;
     import com.litl.sdk.richinput.IRemoteControl;
+    import com.litl.turfwar.event.CrashEvent;
 
-    import flash.events.Event;
     import flash.events.EventDispatcher;
     import com.litl.turfwar.enum.ArenaDirection;
 
@@ -51,7 +51,7 @@ package com.litl.turfwar {
 
         public function crash():void {
             trace("crashed!");
-            dispatchEvent(new Event("crashed"));
+            dispatchEvent(new CrashEvent(this));
         }
 
         public function get id():int {

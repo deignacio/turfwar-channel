@@ -1,6 +1,7 @@
 package com.litl.turfwar {
     import com.litl.turfwar.enum.ArenaDirection;
     import com.litl.turfwar.enum.ArenaSize;
+    import com.litl.turfwar.view.PlayerShape;
 
     import flash.utils.Dictionary;
 
@@ -72,7 +73,7 @@ package com.litl.turfwar {
             }
         }
 
-        public function getTrailPosition(player:Player):ArenaPosition {
+        public function getTrailShape(player:Player):PlayerShape {
             if (player.position == null) {
                 return null;
             }
@@ -98,7 +99,12 @@ package com.litl.turfwar {
                     spot += 1;
                     break;
             }
-            return getPosition(spot);
+            if (isSpotOccupied(spot)) {
+                return _spots[String(spot)];
+            } else {
+                return null;
+            }
+
         }
 
         private function getPosition(spot:int):ArenaPosition {
@@ -110,7 +116,7 @@ package com.litl.turfwar {
         }
 
         private function claimPosition(player:Player):void {
-            _spots[String(getSpot(player.position))] = player;
+            _spots[String(getSpot(player.position))] = new PlayerShape(player.id, player.position);
         }
 
         private function getSpot(pos:ArenaPosition):int {
@@ -133,10 +139,10 @@ package com.litl.turfwar {
 
         public function forEachSpot(func:Function):void {
             if (func != null) {
-                var player:Player;
+                var playerShape:PlayerShape;
                 for (var spot:String in _spots) {
-                    player = _spots[spot];
-                    func(player, getPosition(parseInt(spot)));
+                    playerShape = _spots[spot];
+                    func(playerShape);
                 }
             }
         }
