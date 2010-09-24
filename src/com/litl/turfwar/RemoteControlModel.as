@@ -24,6 +24,7 @@ package com.litl.turfwar {
         public var arena:ArenaModel;
         private var _speed:GameSpeed;
         private var gameTimer:Timer;
+        private var crashing:Boolean;
 
         public function RemoteControlModel(service:LitlService) {
             remoteManager = new RemoteManager(service);
@@ -38,8 +39,16 @@ package com.litl.turfwar {
             scores = new Array();
 
             nextPlayerId = Player.INVALID_PLAYER_ID;
+            crashing = false;
 
             arena = new ArenaModel(ArenaSize.MEDIUM, ArenaWrap.WRAP_NO);
+        }
+
+        public function reset():void {
+            crashing = false;
+
+            arena.reset();
+            forEachPlayer(arena.enterArena);
         }
 
         public function get speed():GameSpeed {
@@ -134,6 +143,8 @@ package com.litl.turfwar {
         }
 
         protected function onCrash(e:CrashEvent):void {
+            crashing = true;
+
             var causerId:int = e.causerId;
             var recordCrashCause:Function = function(player:Player):void {
                 if (player.id == causerId) {
@@ -143,7 +154,6 @@ package com.litl.turfwar {
             forEachPlayer(recordCrashCause);
 
             recomputeScores();
-            pause();
             dispatchEvent(e);
         }
 
@@ -152,7 +162,18 @@ package com.litl.turfwar {
         }
 
         protected function handleTick(e:TimerEvent):void {
-            // TODO: implement this
+            if (crashing) {
+                return;
+            }
+
+            for (var i:int = 0; i < remoteIds.length; i++) {
+                var remoteId:String = remoteIds[i];
+                var player:Player = players[remoteId];
+                player.maybeTurn();
+                arena.movePlayer(player);
+            }
+
+            dispatchEvent(e);
         }
     }
 }

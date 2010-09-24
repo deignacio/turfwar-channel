@@ -2,6 +2,7 @@ package com.litl.turfwar {
     import com.litl.turfwar.enum.ArenaDirection;
     import com.litl.turfwar.enum.ArenaSize;
     import com.litl.turfwar.enum.ArenaWrap;
+    import com.litl.turfwar.view.PlayerShape;
 
     import flash.utils.Dictionary;
 
@@ -76,12 +77,46 @@ package com.litl.turfwar {
             if (!wrap.shouldWrap && hitWall) {
                 player.crash(0);
             } else if (isSpotOccupied(spot)) {
-                var causer:Player = _spots[String(spot)] as Player;
-                player.crash(causer.id);
+                var shape:PlayerShape = _spots[String(spot)] as PlayerShape;
+                player.crash(shape.id);
             } else {
                 player.position = getPosition(spot);
                 claimPosition(player);
             }
+        }
+
+        public function getTrailShape(player:Player):PlayerShape {
+            if (player.position == null) {
+                return null;
+            }
+
+            var spot:int = getSpot(player.position);
+            switch (player.direction) {
+                case ArenaDirection.SOUTH:
+                    spot -= size.cols;
+                    if (spot < 0) {
+                        spot += size.numSpots + 1;
+                    }
+                    break;
+                case ArenaDirection.NORTH:
+                    spot += size.cols;
+                    if (spot > size.numSpots) {
+                        spot -= size.numSpots + 1;
+                    }
+                    break;
+                case ArenaDirection.EAST:
+                    spot -= 1;
+                    break;
+                case ArenaDirection.WEST:
+                    spot += 1;
+                    break;
+            }
+            if (isSpotOccupied(spot)) {
+                return _spots[String(spot)];
+            } else {
+                return null;
+            }
+
         }
 
         private function getPosition(spot:int):ArenaPosition {
@@ -93,7 +128,7 @@ package com.litl.turfwar {
         }
 
         private function claimPosition(player:Player):void {
-            _spots[String(getSpot(player.position))] = player;
+            _spots[String(getSpot(player.position))] = new PlayerShape(player.id, player.position);
         }
 
         private function getSpot(pos:ArenaPosition):int {
@@ -116,10 +151,10 @@ package com.litl.turfwar {
 
         public function forEachSpot(func:Function):void {
             if (func != null) {
-                var player:Player;
+                var playerShape:PlayerShape;
                 for (var spot:String in _spots) {
-                    player = _spots[spot];
-                    func(player, getPosition(parseInt(spot)));
+                    playerShape = _spots[spot];
+                    func(playerShape);
                 }
             }
         }

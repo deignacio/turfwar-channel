@@ -4,6 +4,7 @@ package {
     import com.litl.sdk.message.*;
     import com.litl.sdk.service.LitlService;
     import com.litl.turfwar.RemoteControlModel;
+    import com.litl.turfwar.RemoteControlVisualiser;
     import com.litl.turfwar.event.NoPlayersEvent;
     import com.litl.turfwar.view.CardView;
     import com.litl.turfwar.view.PauseOverlay;
@@ -18,6 +19,7 @@ package {
         public static const CHANNEL_HAS_OPTIONS:Boolean = false;
 
         protected var dataModel:RemoteControlModel;
+        protected var dataVisualiser:RemoteControlVisualiser;
 
         protected var pauseOverlay:PauseOverlay;
 
@@ -28,6 +30,7 @@ package {
         override protected function setup():void {
             dataModel = new RemoteControlModel(service);
             dataModel.addEventListener(NoPlayersEvent.NO_PLAYERS, onNoPlayers);
+            dataVisualiser = new RemoteControlVisualiser(dataModel);
         }
 
         override protected function registerViews():void {
@@ -69,6 +72,7 @@ package {
 
         protected function onUnpause(e:TimerEvent):void {
             trace("unpause complete!");
+            dataVisualiser.drawEverything();
             dataModel.unpause();
         }
 
@@ -86,6 +90,11 @@ package {
         }
 
         override protected function onViewChanged(newView:String, newDetails:String, viewWidth:Number = 0, viewHeight:Number = 0):void {
+            dataVisualiser.view = currentView;
+            if (newView != View.CARD) {
+                dataVisualiser.drawEverything();
+            }
+
             pauseGame();
         }
     }
