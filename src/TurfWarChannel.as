@@ -10,6 +10,7 @@ package
     import com.litl.turfwar.RemoteControlVisualiser;
     import com.litl.turfwar.enum.GameSpeed;
     import com.litl.turfwar.view.CardView;
+    import com.litl.turfwar.view.OptionsView;
     import com.litl.turfwar.view.PauseOverlay;
     import com.litl.turfwar.view.ViewBase;
 
@@ -33,6 +34,7 @@ package
         protected var dataVisualiser:RemoteControlVisualiser;
 
         protected var pauseOverlay:PauseOverlay;
+        protected var optionsView:OptionsView;
 
         public function TurfWarChannel() {
             stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -52,12 +54,13 @@ package
 
             service.addEventListener(InitializeMessage.INITIALIZE, handleInitialize);
             service.addEventListener(ViewChangeMessage.VIEW_CHANGE, handleViewChange);
+            service.addEventListener(OptionsStatusMessage.OPTIONS_STATUS, handleOptionsStatus);
 
             pauseOverlay = new PauseOverlay();
             pauseOverlay.addEventListener(TimerEvent.TIMER_COMPLETE, onUnpause);
             pauseOverlay.pause(this);
 
-            service.connect("turfwar-channel", "Turf Wars", "1.0", false);
+            service.connect("turfwar-channel", "Turf Wars", "1.0", true);
         }
 
         protected function unpauseGame():void {
@@ -134,6 +137,32 @@ package
                         pauseGame();
                     }
                 }
+            }
+        }
+
+        private function handleOptionsStatus(e:OptionsStatusMessage):void {
+            if (e.optionsOpen) {
+                showOptions();
+            } else {
+                hideOptions();
+            }
+        }
+
+        private function showOptions():void {
+            if (optionsView == null) {
+                optionsView = new OptionsView(dataModel, service);
+            }
+            if (!contains(optionsView)) {
+                pauseGame();
+                addChild(optionsView);
+            }
+        }
+
+        private function hideOptions():void {
+            if (optionsView != null && contains(optionsView)) {
+                removeChild(optionsView);
+                optionsView = null;
+                unpauseGame();
             }
         }
 
