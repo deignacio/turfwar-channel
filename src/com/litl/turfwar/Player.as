@@ -16,6 +16,7 @@ package com.litl.turfwar {
 
         private var _pos:ArenaPosition = null;
         private var _dir:String = null;
+        private var _canTurn:Boolean = true;
 
         private var running:Boolean = false;
 
@@ -68,6 +69,7 @@ package com.litl.turfwar {
 
         public function set position(value:ArenaPosition):void {
             _pos = value;
+            _canTurn = true;
         }
 
         public function get direction():String {
@@ -81,6 +83,8 @@ package com.litl.turfwar {
                 case ArenaDirection.LEFT:
                 case ArenaDirection.RIGHT:
                     _dir = value;
+                    _canTurn = false;
+                    trace("player turned:  "+this);
                     break;
                 default:
                     trace("invalid direction?  how'd that happen");
@@ -89,32 +93,31 @@ package com.litl.turfwar {
         }
 
         protected function onAccelerometer(e:AccelerometerEvent):void {
-            switch (_dir) {
+            if (!_canTurn) {
+                return;
+            }
+
+            switch (direction) {
                 case ArenaDirection.UP:
                 case ArenaDirection.DOWN:
                     var x:Number = e.accelerationX;
                     if (x <= -1 * ACCELEROMETER_TURN_THRESHOLD) {
-                        _dir = ArenaDirection.LEFT;
-                        trace("player turned:  "+this);
+                        direction = ArenaDirection.LEFT;
                     } else if (x >= ACCELEROMETER_TURN_THRESHOLD) {
-                        _dir = ArenaDirection.RIGHT;
-                        trace("player turned:  "+this);
+                        direction = ArenaDirection.RIGHT;
                     }
                     break;
                 case ArenaDirection.LEFT:
                 case ArenaDirection.RIGHT:
                     var y:Number = e.accelerationY;
                     if (y <= -1 * ACCELEROMETER_TURN_THRESHOLD) {
-                        _dir = ArenaDirection.DOWN;
-                        trace("player turned:  "+this);
+                        direction = ArenaDirection.DOWN;
                     } else if (y >= ACCELEROMETER_TURN_THRESHOLD) {
-                        _dir = ArenaDirection.UP;
-                        trace("player turned:  "+this);
+                        direction = ArenaDirection.UP;
                     }
                     break;
                 default:
-                    _dir = ArenaDirection.UP;
-                    trace("initial player direction "+_dir);
+                    direction = ArenaDirection.UP;
                     break;
             }
         }
