@@ -13,6 +13,7 @@ package com.litl.turfwar {
         private var nextPlayerId:int;
 
         public var remoteIds:Array;
+        public var scores:Array;
         public var players:Dictionary;
         public var arena:ArenaModel;
         private var _speed:GameSpeed;
@@ -25,6 +26,7 @@ package com.litl.turfwar {
 
             remoteIds = new Array();
             players = new Dictionary();
+            scores = new Array();
 
             nextPlayerId = Player.INVALID_PLAYER_ID;
 
@@ -84,8 +86,10 @@ package com.litl.turfwar {
 
             var player:Player = players[remoteId];
             player.removeEventListener(CrashEvent.CRASH, onCrash);
+            scores.splice(scores.indexOf(player.score), 1);
             arena.leaveArena(player);
             player.destroy();
+            recomputeScores();
         }
 
         public function handleRemoteConnect(remote:IRemoteControl):void {
@@ -101,13 +105,20 @@ package com.litl.turfwar {
                 var player:Player = players[remoteId];
                 player.associateRemote(remote);
                 player.addEventListener(CrashEvent.CRASH, onCrash);
+                scores.push(player.score);
                 arena.enterArena(player);
             }
+            recomputeScores();
         }
 
         protected function onCrash(e:CrashEvent):void {
+            recomputeScores();
             pause();
             dispatchEvent(e);
+        }
+
+        protected function recomputeScores():void {
+            scores.sort(PlayerScore.compareFunction);
         }
 
         public function handleTick(e:TimerEvent):void {

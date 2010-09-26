@@ -12,6 +12,7 @@ package
     import com.litl.turfwar.view.CardView;
     import com.litl.turfwar.view.OptionsView;
     import com.litl.turfwar.view.PauseOverlay;
+    import com.litl.turfwar.view.Scoreboard;
     import com.litl.turfwar.view.ViewBase;
 
     import flash.display.DisplayObject;
@@ -33,6 +34,7 @@ package
         protected var dataModel:RemoteControlModel;
         protected var dataVisualiser:RemoteControlVisualiser;
 
+        protected var scoreboard:Scoreboard;
         protected var pauseOverlay:PauseOverlay;
         protected var optionsView:OptionsView;
 
@@ -55,6 +57,7 @@ package
             service.addEventListener(InitializeMessage.INITIALIZE, handleInitialize);
             service.addEventListener(ViewChangeMessage.VIEW_CHANGE, handleViewChange);
             service.addEventListener(OptionsStatusMessage.OPTIONS_STATUS, handleOptionsStatus);
+            service.addEventListener(UserInputMessage.GO_BUTTON_RELEASED, handleGoReleased);
 
             pauseOverlay = new PauseOverlay();
             pauseOverlay.addEventListener(TimerEvent.TIMER_COMPLETE, onUnpause);
@@ -205,6 +208,28 @@ package
             } else {
                 unpauseGame();
             }
+        }
+
+        protected function handleGoReleased(e:UserInputMessage):void {
+            toggleScoreboard();
+        }
+
+        private function toggleScoreboard():void {
+            if (scoreboard == null) {
+                trace("showing scoreboard");
+                scoreboard = new Scoreboard(dataModel);
+                pauseGame();
+                addChild(scoreboard);
+            } else {
+                trace("hiding scoreboard");
+                if (contains(scoreboard)) {
+                    removeChild(scoreboard);
+                }
+                scoreboard.destroy();
+                scoreboard = null;
+                unpauseGame();
+            }
+
         }
     }
 }

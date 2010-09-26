@@ -19,8 +19,11 @@ package com.litl.turfwar {
 
         private var running:Boolean = false;
 
+        public var score:PlayerScore;
+
         public function Player(id:int) {
             _id = id;
+            score = new PlayerScore(id);
         }
 
         public function destroy():void {
@@ -51,6 +54,7 @@ package com.litl.turfwar {
 
         public function crash():void {
             trace("crashed!");
+            score.crashes++;
             dispatchEvent(new CrashEvent(this));
         }
 
