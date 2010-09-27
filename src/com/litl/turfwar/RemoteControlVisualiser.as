@@ -26,8 +26,8 @@ package com.litl.turfwar {
         private var crashedPlayerId:int;
         private var explodeTweens:Array;
 
-        private var colors:Array = [ 0x000000, 0x9AD7DB, 0xFFFFFF, 0x00ff00,
-            0xff0000, 0x76d5db, 0x56d3db,
+        private var colors:Array = [ 0x000000, 0xff0000, 0x0000ff, 0x00ff00,
+            0xffffff, 0x9AD7DB, 0x76d5db, 0x56d3db,
             0x2cd0db, 0x00cedb, 0x00cedb ];
 
         public function RemoteControlVisualiser(dataModel:RemoteControlModel) {
