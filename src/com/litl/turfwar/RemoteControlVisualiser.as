@@ -16,6 +16,8 @@ package com.litl.turfwar {
         protected var view:Sprite;
 
         public static const PLAYER_TRAIL_RATIO:Number = 0.5;
+        public static const ARENA_COLOR:uint = 0x000000;
+        public static const BACKGROUND_COLOR:uint = 0xcdc9c9;
         private var playerRadius:Number;
         private var trailRadius:Number;
         private var maxDist:Number;
@@ -45,8 +47,11 @@ package com.litl.turfwar {
         protected function clearScreen():void {
             var s:Shape = new Shape();
             s.graphics.clear();
-            s.graphics.beginFill(0x000000);
+            s.graphics.beginFill(BACKGROUND_COLOR);
             s.graphics.drawRect(0, 0, view.width, view.height);
+            s.graphics.endFill();
+            s.graphics.beginFill(ARENA_COLOR);
+            s.graphics.drawRect(0, 0, dataModel.arena.size.cols * playerRadius * 2, dataModel.arena.size.rows * playerRadius * 2);
             s.graphics.endFill();
             view.addChild(s);
         }
