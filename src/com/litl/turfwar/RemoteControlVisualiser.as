@@ -1,7 +1,10 @@
 package com.litl.turfwar {
+    import away3d.containers.Scene3D;
+
     import com.litl.sdk.richinput.IRemoteControl;
     import com.litl.sdk.util.Tween;
     import com.litl.turfwar.event.CrashEvent;
+    import com.litl.turfwar.view.FirstPersonView;
     import com.litl.turfwar.view.HeadsUpGameView;
     import com.litl.turfwar.view.IGameView;
     import com.litl.turfwar.view.PlayerShape;
@@ -9,12 +12,17 @@ package com.litl.turfwar {
     import flash.display.Shape;
     import flash.display.Sprite;
     import flash.events.Event;
+    import flash.utils.Dictionary;
 
     public class RemoteControlVisualiser {
         protected var dataModel:RemoteControlModel;
         protected var view:Sprite;
 
         private var gameViews:Array;
+        public var scene:Scene3D;
+        private var playerViews:Dictionary;
+        private var playerIds:Array;
+        private var ensuringIds:Array;
 
         private var crashedId:int;
         private var stillCrashing:Array;
@@ -33,6 +41,9 @@ package com.litl.turfwar {
 
             stillCrashing = new Array();
             gameViews = new Array();
+            playerViews = new Dictionary();
+            playerIds = new Array();
+            scene = new Scene3D();
 
             gameViews.push(new HeadsUpGameView(dataModel, this, 1, 1, 0.0, 0));
         }
@@ -47,9 +58,47 @@ package com.litl.turfwar {
             }
         }
 
+
+        protected function forEachPlayerView(func:Function):void {
+            var inner:Function = function(player:Player):void {
+                var pView:IGameView = playerViews[player.id];
+                if (pView != null) {
+                    func(pView);
+                }
+            };
+            dataModel.forEachPlayer(inner);
+        }
+
+        public function refreshPlayers():void {
+            // create the player views
+            ensuringIds = playerIds.slice(0, -1);
+            dataModel.forEachPlayer(ensurePlayerView);
+            for (var i:int = 0; i < ensuringIds.length; i++) {
+                var playerId:int = ensuringIds[i];
+                var pView:IGameView = playerViews[playerId];
+                delete playerViews[playerId];
+                pView.destroy();
+            }
+            ensuringIds = null;
+        }
+
+        protected function ensurePlayerView(player:Player):void {
+            if (!playerViews.hasOwnProperty(player.id)) {
+                trace("creating first person view for player "+player.id);
+                var pView:IGameView = new FirstPersonView(player, dataModel, this,
+                    0.50, 0.50, 0.50, 0.50);
+
+                playerViews[player.id] = pView;
+                playerIds.push(player.id);
+            } else {
+                ensuringIds.splice(playerIds.indexOf(player.id));
+            }
+        }
+
         protected function onCrash(e:CrashEvent):void {
             crashedId = e.player.id;
             forEachGameView(crashView);
+            forEachPlayerView(crashView);
         }
 
         protected function crashView(gameView:IGameView):void {
@@ -66,7 +115,10 @@ package com.litl.turfwar {
         }
 
         public function clear():void {
+            scene = new Scene3D();
+
             forEachGameView(clearView);
+            forEachPlayerView(clearView);
         }
 
         protected function clearView(gameView:IGameView):void {
@@ -77,6 +129,7 @@ package com.litl.turfwar {
             this.view = view;
 
             forEachGameView(drawView);
+            forEachPlayerView(drawView);
         }
 
         protected function drawView(gameView:IGameView):void {
@@ -87,6 +140,7 @@ package com.litl.turfwar {
             this.view = view;
 
             forEachGameView(drawEverythingView);
+            forEachPlayerView(drawEverythingView);
         }
 
         protected function drawEverythingView(gameView:IGameView):void {

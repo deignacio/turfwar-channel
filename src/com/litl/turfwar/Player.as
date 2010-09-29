@@ -10,7 +10,7 @@ package com.litl.turfwar {
     public class Player extends EventDispatcher{
         public static var INVALID_PLAYER_ID:int = 0;
         public static var ACCELEROMETER_TURN_THRESHOLD:Number = 0.4;
-        public static var turnType:String = "topdown";  // or "firstperson", too lazy to enum
+        public static var turnType:String = "firstperson";  // "topdown" or "firstperson", too lazy to enum
 
         private var _id:int;
         private var _acc:Accelerometer = null;
@@ -18,18 +18,22 @@ package com.litl.turfwar {
         private var _pos:ArenaPosition = null;
         private var _dir:String = null;
         private var _canTurn:Boolean = true;
+        private var _needsWrapMove:Boolean = false;
 
         private var running:Boolean = false;
 
         public var score:PlayerScore;
+        public var moves:Array;
 
         public function Player(id:int) {
             _id = id;
             score = new PlayerScore(id);
+            moves = new Array();
         }
 
         public function destroy():void {
             pause();
+            moves = null;
             _acc = null;
         }
 
@@ -57,6 +61,7 @@ package com.litl.turfwar {
         public function crash():void {
             trace("crashed!");
             score.crashes++;
+            moves = new Array();
             direction = direction;
             dispatchEvent(new CrashEvent(this));
         }
@@ -74,6 +79,10 @@ package com.litl.turfwar {
             if (turnType == "topdown") {
                 _canTurn = true;
             }
+            if (_needsWrapMove) {
+                moves.push(new PlayerMove(position, direction));
+                _needsWrapMove = false;
+            }
         }
 
         public function get direction():String {
@@ -88,12 +97,18 @@ package com.litl.turfwar {
                 case ArenaDirection.RIGHT:
                     _dir = value;
                     _canTurn = false;
+                    moves.push(new PlayerMove(position, direction));
                     trace("player turned:  "+this);
                     break;
                 default:
                     trace("invalid direction?  how'd that happen");
                     break;
             }
+        }
+
+        public function addWrapMove():void {
+            moves.push(new PlayerMove(position, direction));
+            _needsWrapMove = true;
         }
 
         protected function onAccelerometer(e:AccelerometerEvent):void {

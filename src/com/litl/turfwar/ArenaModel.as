@@ -44,30 +44,39 @@ package com.litl.turfwar {
             }
 
             var spot:int = getSpot(player.position);
+            var needsWrapMove:Boolean = false;
             switch (player.direction) {
                 case ArenaDirection.UP:
                     spot -= size.cols;
                     if (spot < 0) {
+                        needsWrapMove = true;
                         spot += size.numSpots + 1;
                     }
                     break;
                 case ArenaDirection.DOWN:
                     spot += size.cols;
                     if (spot > size.numSpots) {
+                        needsWrapMove = true;
                         spot -= size.numSpots + 1;
                     }
                     break;
                 case ArenaDirection.LEFT:
                     spot -= 1;
+
+                    needsWrapMove = spot % size.cols == 0 || (spot + 1) % size.cols == 0;
                     break;
                 case ArenaDirection.RIGHT:
                     spot += 1;
+                    needsWrapMove = spot % size.cols == 0 || (spot + 1) % size.cols == 0;
                     break;
             }
             if (isSpotOccupied(spot)) {
                 player.crash();
                 reset();
             } else {
+                if (needsWrapMove) {
+                    player.addWrapMove();
+                }
                 player.position = getPosition(spot);
                 claimPosition(player);
             }

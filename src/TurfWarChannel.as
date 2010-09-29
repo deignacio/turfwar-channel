@@ -133,9 +133,11 @@ package
             if (remote != null && remote.hasAccelerometer) {
                 if (e.remoteEnabled) {
                     dataModel.handleRemoteConnect(remote);
+                    dataVisualiser.refreshPlayers();
                     unpauseGame();
                 } else {
                     dataModel.handleRemoteDisconnect(remote);
+                    dataVisualiser.refreshPlayers();
                     if (dataModel.remoteIds.length == 0) {
                         pauseGame();
                     }
