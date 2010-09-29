@@ -76,14 +76,14 @@ package
                     pauseOverlay.setMessage("game paused\nno players!");
                 }
             } else {
-                dataVisualiser.drawWholeGame(view);
+                dataVisualiser.drawEverything(view);
             }
         }
 
         protected function onUnpause(e:TimerEvent):void {
             trace("unpause complete!");
             var view:Sprite = (currentView == null) ? this : currentView;
-            dataVisualiser.drawWholeGame(view);
+            dataVisualiser.drawEverything(view);
             dataModel.unpause();
         }
 
@@ -123,7 +123,7 @@ package
 
         private function handleTimerTick(event:TimerEvent):void {
             if (currentView != null) {
-                dataVisualiser.drawGame(currentView);
+                dataVisualiser.draw(currentView);
             }
             event.stopPropagation();
         }
