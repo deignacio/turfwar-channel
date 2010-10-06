@@ -9,6 +9,7 @@ package
     import com.litl.turfwar.RemoteControlModel;
     import com.litl.turfwar.event.NoPlayersEvent;
     import com.litl.turfwar.view.CardView;
+    import com.litl.turfwar.view.PauseOverlay;
     import com.litl.view.ViewBase;
 
     import flash.display.DisplayObject;
@@ -33,6 +34,8 @@ package
 
         protected var dataModel:RemoteControlModel;
 
+        protected var pauseOverlay:PauseOverlay;
+
         public function TurfWarChannel() {
             stage.scaleMode = StageScaleMode.NO_SCALE;
             stage.align = StageAlign.TOP_LEFT;
@@ -49,12 +52,42 @@ package
             service.addEventListener(InitializeMessage.INITIALIZE, handleInitialize);
             service.addEventListener(ViewChangeMessage.VIEW_CHANGE, handleViewChange);
 
+            pauseOverlay = new PauseOverlay();
+            pauseOverlay.addEventListener(TimerEvent.TIMER_COMPLETE, onUnpause);
+            pauseOverlay.pause(this);
+
             service.connect(CHANNEL_ENGINE_GUID, CHANNEL_TITLE, CHANNEL_VERSION, CHANNEL_HAS_OPTIONS);
         }
 
         /** if there are no more players, pause the game */
         protected function onNoPlayers(e:NoPlayersEvent):void {
             pauseGame();
+        }
+
+        protected function unpauseGame():void {
+            if (!dataModel.running) {
+                var view:Sprite = (currentView == null) ? this : currentView;
+                if (dataModel.remoteIds.length > 0) {
+                    pauseOverlay.unpause(view);
+                } else {
+                    pauseOverlay.pause(view);
+                    pauseOverlay.setMessage("game paused\nno players!");
+                }
+            }
+        }
+
+        protected function onUnpause(e:TimerEvent):void {
+            trace("unpause complete!");
+            dataModel.unpause();
+        }
+
+        protected function pauseGame():void {
+            var view:Sprite = (currentView == null) ? this : currentView;
+            pauseOverlay.pause(view);
+            if (dataModel.remoteIds.length == 0) {
+                pauseOverlay.setMessage("game paused\nno players!");
+            }
+            dataModel.pause();
         }
 
         /**
@@ -114,6 +147,12 @@ package
 
             if (!contains(currentView))
                 addChild(currentView);
+
+            if (newDetails != ViewDetails.NORMAL || newView == View.CARD) {
+                pauseGame();
+            } else {
+                unpauseGame();
+            }
         }
     }
 }

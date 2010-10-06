@@ -69,6 +69,10 @@
       <compiler.library-path dir="${litl.sdk.core.path}" append="true">
         <include name="bin"/>
       </compiler.library-path>
+
+      <compiler.library-path dir="${flex.lib}" append="true">
+        <include name="*.swc"/>
+      </compiler.library-path>
     </mxmlc>
   </target>
 
