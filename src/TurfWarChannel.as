@@ -9,6 +9,7 @@ package {
     import com.litl.turfwar.view.CardView;
     import com.litl.turfwar.view.OptionsView;
     import com.litl.turfwar.view.PauseOverlay;
+    import com.litl.turfwar.view.Scoreboard;
     import com.litl.view.ViewBase;
 
     import flash.events.TimerEvent;
@@ -52,6 +53,9 @@ package {
 
             var optionsView:OptionsView = new OptionsView(dataModel, service);
             pauseOverlay.addChildForViews(optionsView, [focusView]);
+
+            var scoreboard:Scoreboard = new Scoreboard(dataModel);
+            pauseOverlay.addChildForViews(scoreboard, [focusView, channelView]);
         }
 
         override protected function connectToService():void {
