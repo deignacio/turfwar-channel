@@ -7,6 +7,7 @@ package {
     import com.litl.turfwar.RemoteControlVisualiser;
     import com.litl.turfwar.event.NoPlayersEvent;
     import com.litl.turfwar.view.CardView;
+    import com.litl.turfwar.view.OptionsView;
     import com.litl.turfwar.view.PauseOverlay;
     import com.litl.view.ViewBase;
 
@@ -48,6 +49,9 @@ package {
             pauseOverlay.pause(this);
 
             pauseOverlay.disableDimForViews([cardView]);
+
+            var optionsView:OptionsView = new OptionsView(dataModel, service);
+            pauseOverlay.addChildForViews(optionsView, [focusView]);
         }
 
         override protected function connectToService():void {
