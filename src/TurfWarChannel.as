@@ -136,6 +136,7 @@ package
             if (currentView == null) {
                 if (newView == View.CARD) {
                     currentView = new CardView();
+                    pauseOverlay.disableDimForViews([currentView]);
                 } else {
                     currentView = new ViewBase();
                 }
