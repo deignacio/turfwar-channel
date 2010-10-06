@@ -105,5 +105,13 @@ package {
 
             pauseGame();
         }
+
+        override protected function handleGoReleased(e:UserInputMessage):void {
+            if (dataModel.running) {
+                pauseGame();
+            } else {
+                unpauseGame();
+            }
+        }
     }
 }

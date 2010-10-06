@@ -1,5 +1,6 @@
 package com.litl {
     import com.litl.sdk.message.InitializeMessage;
+    import com.litl.sdk.message.UserInputMessage;
     import com.litl.sdk.message.ViewChangeMessage;
     import com.litl.sdk.service.LitlService;
 
@@ -27,6 +28,9 @@ package com.litl {
         private function setupService():void {
             service = new LitlService(this);
             service.addEventListener(InitializeMessage.INITIALIZE, handleInitialize);
+            service.addEventListener(UserInputMessage.GO_BUTTON_PRESSED, handleGoPressed);
+            service.addEventListener(UserInputMessage.GO_BUTTON_HELD, handleGoHeld);
+            service.addEventListener(UserInputMessage.GO_BUTTON_RELEASED, handleGoReleased);
             setup();
         }
 
@@ -119,6 +123,30 @@ package com.litl {
          * This should contain a service.connect(); invocation
          */
         protected function connectToService():void {
+        }
+
+        /**
+         * Called when the go button is pressed.
+         *
+         * NOTE:  Only dispatched when the channel is in CHANNEL view.
+         */
+        protected function handleGoPressed(e:UserInputMessage):void {
+        }
+
+        /**
+         * Called when the go button is held for one second.
+         *
+         * NOTE:  Only dispatched when the channel is in CHANNEL view.
+         */
+        protected function handleGoHeld(e:UserInputMessage):void {
+        }
+
+        /**
+         * Called when the go button is released.
+         *
+         * NOTE:  Only dispatched when the channel is in CHANNEL view.
+         */
+        protected function handleGoReleased(e:UserInputMessage):void {
         }
     }
 }
