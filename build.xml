@@ -31,13 +31,11 @@
   </target>
 
   <target name="copy-assets" description="Copy assets to output path">
-    <!-- if you need to copy assets to the output path, uncomment this
     <copy preservelastmodified="true"
           todir="${flex.output.path}/assets"
           verbose="true">
       <fileset dir="${flex.assets}" />
     </copy>
-    -->
   </target>
 
   <target name="build-swf" description="Build swf">

@@ -6,6 +6,7 @@ package
     import com.litl.sdk.message.*;
     import com.litl.sdk.richinput.*;
     import com.litl.sdk.service.LitlService;
+    import com.litl.turfwar.view.CardView;
     import com.litl.view.ViewBase;
 
     import flash.display.DisplayObject;
@@ -87,8 +88,13 @@ package
 
             currentView = views[newView] as ViewBase;
 
-            if (currentView == null)
-                currentView = new ViewBase();
+            if (currentView == null) {
+                if (newView == View.CARD) {
+                    currentView = new CardView();
+                } else {
+                    currentView = new ViewBase();
+                }
+            }
 
             views[newView] = currentView;
 
