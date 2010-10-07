@@ -69,7 +69,7 @@ package {
 
         protected function unpauseGame():void {
             if (!dataModel.running) {
-                if (dataModel.remoteIds.length > 0) {
+                if (dataModel.numConnected > 0) {
                     pauseOverlay.unpause(currentView);
                 } else {
                     pauseOverlay.pause(currentView);
@@ -86,7 +86,7 @@ package {
 
         protected function pauseGame():void {
             pauseOverlay.pause(currentView);
-            if (dataModel.remoteIds.length == 0) {
+            if (dataModel.numConnected == 0) {
                 pauseOverlay.setMessage("game paused\nno players!");
             }
             dataModel.pause();

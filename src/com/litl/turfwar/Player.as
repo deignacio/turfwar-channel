@@ -1,12 +1,13 @@
 package com.litl.turfwar {
     import com.litl.sdk.richinput.IRemoteControl;
+    import com.litl.sdk.richinput.remotehandler.IRemoteHandler;
     import com.litl.sdk.richinput.keypad.AccelerometerKeypad;
     import com.litl.turfwar.enum.ArenaDirection;
     import com.litl.turfwar.event.CrashEvent;
 
     import flash.events.EventDispatcher;
 
-    public class Player extends EventDispatcher{
+    public class Player extends EventDispatcher implements IRemoteHandler {
         public static var INVALID_PLAYER_ID:int = 0;
         public static var ACCELEROMETER_TURN_THRESHOLD:Number = 0.4;
 
@@ -25,17 +26,17 @@ package com.litl.turfwar {
             score = new PlayerScore(id);
         }
 
-        public function destroy():void {
-            pause();
-            keypad.destroy();
-            keypad = null;
-        }
-
-        public function associateRemote(remote:IRemoteControl):void {
+        public function pair(remote:IRemoteControl):void {
             if (remote.hasAccelerometer) {
                 keypad = new ArenaDirectionKeypad(remote.accelerometer);
                 resume();
             }
+        }
+
+        public function unpair(remote:IRemoteControl):void {
+            pause();
+            keypad.destroy();
+            keypad = null;
         }
 
         public function resume():void {
