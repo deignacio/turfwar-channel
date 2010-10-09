@@ -23,14 +23,43 @@ package com.litl.snake.model {
     import com.litl.helpers.richinput.remotehandler.IRemoteHandler;
     import com.litl.helpers.richinput.remotehandler.KeypadRemoteHandler;
     import com.litl.sdk.richinput.Accelerometer;
+    import com.litl.snake.enum.PlayerDirection;
 
     public class Player extends KeypadRemoteHandler implements IRemoteHandler {
         private var _id:int;
+
+        private var _dir:String = null;
+        public var position:PlayerPosition = new PlayerPosition();
 
         public function Player(id:int) {
             super();
 
             _id = id;
+        }
+
+        public function get id():int {
+            return _id;
+        }
+
+        public function get direction():String {
+            return _dir;
+        }
+
+        /**
+         * Ensure that only valid values are accepted.
+         *
+         * @param value the new direction
+         * @see com.litl.snake.enum.PlayerDirection PlayerDirection
+         */
+        public function set direction(value:String):void {
+            switch (value) {
+                case PlayerDirection.NORTH:
+                case PlayerDirection.SOUTH:
+                case PlayerDirection.WEST:
+                case PlayerDirection.EAST:
+                    _dir = value;
+                    break;
+            }
         }
 
         override protected function createKeypad(accelerometer:Accelerometer):AccelerometerKeypad {

@@ -19,31 +19,33 @@
 * IN THE SOFTWARE.
 */
 package com.litl.snake.model {
-    import com.litl.helpers.richinput.remotehandler.IRemoteHandler;
-    import com.litl.helpers.richinput.remotehandler.RemoteHandlerManager;
-    import com.litl.sdk.richinput.IRemoteControl;
-    import com.litl.sdk.service.LitlService;
-    import com.litl.snake.enum.ArenaSize;
+    public class PlayerPosition {
+        private var _x:int;
+        private var _y:int;
 
-    public class GameModel extends RemoteHandlerManager {
-        public var arena:ArenaModel;
-
-        public function GameModel(service:LitlService) {
-            super(service, new PlayerFactory());
-
-            arena = new ArenaModel(ArenaSize.MEDIUM);
-
-            start();
+        public function PlayerPosition(x:int = -1, y:int = -1) {
+            _x = x;
+            _y = y;
         }
 
-        override protected function onRemoteConnected(remote:IRemoteControl, handler:IRemoteHandler):void {
-            var player:Player = handler as Player;
-            arena.enterArena(player);
+        public function get x():int {
+            return _x;
         }
 
-        override protected function onRemoteDisconnected(remote:IRemoteControl, handler:IRemoteHandler):void {
-            var player:Player = handler as Player;
-            arena.leaveArena(player);
+        public function set x(value:int):void {
+            _x = value;
+        }
+
+        public function get y():int {
+            return _y;
+        }
+
+        public function set y(value:int):void {
+            _y = value;
+        }
+
+        public function toString():String {
+            return "("+_x+","+_y+")";
         }
     }
 }

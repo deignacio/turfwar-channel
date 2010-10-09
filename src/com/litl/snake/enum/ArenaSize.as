@@ -18,32 +18,28 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
-package com.litl.snake.model {
-    import com.litl.helpers.richinput.remotehandler.IRemoteHandler;
-    import com.litl.helpers.richinput.remotehandler.RemoteHandlerManager;
-    import com.litl.sdk.richinput.IRemoteControl;
-    import com.litl.sdk.service.LitlService;
-    import com.litl.snake.enum.ArenaSize;
+package com.litl.snake.enum {
+    public class ArenaSize {
+        public static const LARGE:ArenaSize = new ArenaSize("large", 133, 213);
+        public static const MEDIUM:ArenaSize = new ArenaSize("medium", 90, 144);
+        public static const SMALL:ArenaSize = new ArenaSize("small", 50, 80);
 
-    public class GameModel extends RemoteHandlerManager {
-        public var arena:ArenaModel;
+        public static const ALL_SIZES:Array = [ LARGE, MEDIUM, SMALL ];
 
-        public function GameModel(service:LitlService) {
-            super(service, new PlayerFactory());
+        public var name:String;
+        public var rows:int;
+        public var cols:int;
+        public var numSpots:int;
 
-            arena = new ArenaModel(ArenaSize.MEDIUM);
-
-            start();
+        public function ArenaSize(name:String, rows:int, cols:int) {
+            this.name = name;
+            this.rows = rows;
+            this.cols = cols;
+            this.numSpots = rows * cols;
         }
 
-        override protected function onRemoteConnected(remote:IRemoteControl, handler:IRemoteHandler):void {
-            var player:Player = handler as Player;
-            arena.enterArena(player);
-        }
-
-        override protected function onRemoteDisconnected(remote:IRemoteControl, handler:IRemoteHandler):void {
-            var player:Player = handler as Player;
-            arena.leaveArena(player);
+        public function toString():String {
+            return name;
         }
     }
 }
