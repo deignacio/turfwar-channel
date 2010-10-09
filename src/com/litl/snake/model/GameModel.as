@@ -23,10 +23,12 @@ package com.litl.snake.model {
     import com.litl.helpers.richinput.remotehandler.RemoteHandlerManager;
     import com.litl.sdk.richinput.IRemoteControl;
     import com.litl.sdk.service.LitlService;
+    import com.litl.snake.controls.IGameLoopMember;
     import com.litl.snake.enum.ArenaSize;
     import com.litl.snake.enum.ArenaWrap;
+    import com.litl.snake.enum.GameLoopStage;
 
-    public class GameModel extends RemoteHandlerManager {
+    public class GameModel extends RemoteHandlerManager implements IGameLoopMember {
         private var crashes:Array;
 
         public var arena:ArenaModel;
@@ -38,6 +40,10 @@ package com.litl.snake.model {
             arena = new ArenaModel(ArenaSize.MEDIUM, ArenaWrap.WRAP_YES);
 
             start();
+        }
+
+        public function get stages():Array {
+            return [GameLoopStage.MOVE];
         }
 
         protected function resetGame():void {
@@ -64,7 +70,17 @@ package com.litl.snake.model {
             forEachHandler(outer);
         }
 
-        protected function oneTurn():void {
+        public function onStage(stage:String):void {
+            switch (stage) {
+                case GameLoopStage.MOVE:
+                    onMove();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        protected function onMove():void {
             if (crashes.length) {
                 return;
             }
