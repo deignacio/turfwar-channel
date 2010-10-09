@@ -24,16 +24,27 @@ package com.litl.snake.model {
     import com.litl.sdk.richinput.IRemoteControl;
     import com.litl.sdk.service.LitlService;
     import com.litl.snake.enum.ArenaSize;
+    import com.litl.snake.enum.ArenaWrap;
 
     public class GameModel extends RemoteHandlerManager {
+        private var crashes:Array;
+
         public var arena:ArenaModel;
 
         public function GameModel(service:LitlService) {
             super(service, new PlayerFactory());
+            crashes = new Array();
 
-            arena = new ArenaModel(ArenaSize.MEDIUM);
+            arena = new ArenaModel(ArenaSize.MEDIUM, ArenaWrap.WRAP_YES);
 
             start();
+        }
+
+        protected function resetGame():void {
+            crashes = new Array();
+
+            arena.reset();
+            forEachPlayer(arena.enterArena);
         }
 
         override protected function onRemoteConnected(remote:IRemoteControl, handler:IRemoteHandler):void {
@@ -44,6 +55,32 @@ package com.litl.snake.model {
         override protected function onRemoteDisconnected(remote:IRemoteControl, handler:IRemoteHandler):void {
             var player:Player = handler as Player;
             arena.leaveArena(player);
+        }
+
+        public function forEachPlayer(func:Function):void {
+            var outer:Function = function(handler:IRemoteHandler):void {
+                func(handler as Player);
+            };
+            forEachHandler(outer);
+        }
+
+        protected function oneTurn():void {
+            if (crashes.length) {
+                return;
+            }
+
+            forEachPlayer(onePlayer);
+            if (crashes.length) {
+                // do some crash stuff
+                resetGame();
+            }
+        }
+
+        private function onePlayer(player:Player):void {
+            player.checkKeypad();
+            if (arena.advancePlayer(player)) {
+                crashes.push(player);
+            }
         }
     }
 }
