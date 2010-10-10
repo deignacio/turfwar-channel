@@ -19,15 +19,14 @@
 * IN THE SOFTWARE.
 */
 package com.litl.snake.enum {
-    public class GameLoopStage {
-        public static const MOVE:String = "move";
-        public static const DRAW:String = "draw";
-        public static const CLEANUP:String = "cleanup";
+    public class PlayerColors {
+        private static const COLORS:Array = [
+            0xff0000, 0x0000ff, 0x00ff00,
+            0xffffff, 0x9AD7DB, 0x76d5db,
+            0x56d3db, 0x2cd0db, 0x00cedb ];
 
-        public static const ALL_STAGES:Array = [
-            MOVE,
-            DRAW,
-            CLEANUP
-        ];
+        public static function getColor(playerId:int):uint {
+            return COLORS[playerId % COLORS.length];
+        }
     }
 }

@@ -18,16 +18,13 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
-package com.litl.snake.enum {
-    public class GameLoopStage {
-        public static const MOVE:String = "move";
-        public static const DRAW:String = "draw";
-        public static const CLEANUP:String = "cleanup";
+package com.litl.snake.view {
+    import com.litl.helpers.view.ViewBase;
 
-        public static const ALL_STAGES:Array = [
-            MOVE,
-            DRAW,
-            CLEANUP
-        ];
+    public interface IGameView {
+        function set view(value:ViewBase):void;
+        function clear():void;
+        function drawMove():void;
+        function refresh():void;
     }
 }

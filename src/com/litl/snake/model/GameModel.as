@@ -29,7 +29,7 @@ package com.litl.snake.model {
     import com.litl.snake.enum.GameLoopStage;
 
     public class GameModel extends RemoteHandlerManager implements IGameLoopMember {
-        private var crashes:Array;
+        public var crashes:Array;
 
         public var arena:ArenaModel;
 
@@ -43,7 +43,7 @@ package com.litl.snake.model {
         }
 
         public function get stages():Array {
-            return [GameLoopStage.MOVE];
+            return [GameLoopStage.MOVE, GameLoopStage.CLEANUP];
         }
 
         protected function resetGame():void {
@@ -75,6 +75,9 @@ package com.litl.snake.model {
                 case GameLoopStage.MOVE:
                     onMove();
                     break;
+                case GameLoopStage.CLEANUP:
+                    onCleanup();
+                    break;
                 default:
                     break;
             }
@@ -86,6 +89,9 @@ package com.litl.snake.model {
             }
 
             forEachPlayer(onePlayer);
+        }
+
+        protected function onCleanup():void {
             if (crashes.length) {
                 // do some crash stuff
                 resetGame();
