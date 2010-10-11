@@ -27,6 +27,7 @@ package {
     import com.litl.snake.controls.GameLoop;
     import com.litl.snake.enum.GameSpeed;
     import com.litl.snake.model.GameModel;
+    import com.litl.snake.view.CardView;
     import com.litl.snake.view.GameViewManager;
     import com.litl.snake.view.OptionsView;
     import com.litl.snake.view.PauseOverlay;
@@ -61,8 +62,10 @@ package {
         }
 
         override protected function registerViews():void {
-            var cardView:ViewBase = new ViewBase();
+            var cardView:ViewBase = new CardView();
             views[View.CARD] = cardView;
+
+            pauseOverlay.disableDimForViews([cardView]);
 
             var focusView:ViewBase = new ViewBase();
             views[View.FOCUS] = focusView;
@@ -96,7 +99,10 @@ package {
 
         override protected function onViewChanged(newView:String, newDetails:String, viewWidth:Number=0, viewHeight:Number=0):void {
             pauseOverlay.view = currentView;
-            viewManager.view = currentView;
+
+            if (newView != View.CARD) {
+                viewManager.view = currentView;
+            }
 
             gameLoop.pause();
         }
