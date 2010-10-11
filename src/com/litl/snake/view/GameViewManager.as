@@ -22,6 +22,7 @@ package com.litl.snake.view {
     import com.litl.helpers.view.ViewBase;
     import com.litl.snake.controls.IGameLoopMember;
     import com.litl.snake.enum.GameLoopStage;
+    import com.litl.snake.event.CrashSceneEvent;
     import com.litl.snake.event.SkipStageEvent;
     import com.litl.snake.model.GameModel;
 
@@ -35,11 +36,22 @@ package com.litl.snake.view {
         protected var gameViews:Array;
         protected var _view:ViewBase;
 
+        protected var drawingCrashScene:Array;
+
         public function GameViewManager(model:GameModel) {
             this.model = model;
 
             gameViews = new Array();
-            gameViews.push(new HeadsUpGameView(model));
+            addGameView(new HeadsUpGameView(model));
+
+            drawingCrashScene = new Array();
+        }
+
+        protected function addGameView(gameView:IGameView):void {
+            gameView.addEventListener(CrashSceneEvent.BEGIN, onCrashSceneBegin, false, 0, true);
+            gameView.addEventListener(CrashSceneEvent.END, onCrashSceneEnd, false, 0, true);
+
+            gameViews.push(gameView);
         }
 
         public function set view(value:ViewBase):void {
@@ -93,7 +105,33 @@ package com.litl.snake.view {
 
         protected function drawCrashes(gameView:IGameView):void {
             gameView.view = _view;
-            gameView.clear();
+            gameView.drawCrash();
+        }
+
+        protected function onCrashSceneBegin(e:CrashSceneEvent):void {
+            if (drawingCrashScene.indexOf(e.target) == -1) {
+                if (drawingCrashScene.length == 0) {
+                    dispatchEvent(new SkipStageEvent(SkipStageEvent.SKIP_STAGE, GameLoopStage.MOVE));
+                    dispatchEvent(new SkipStageEvent(SkipStageEvent.SKIP_STAGE, GameLoopStage.DRAW));
+                }
+
+                drawingCrashScene.push(e.target);
+            }
+        }
+
+        protected function onCrashSceneEnd(e:CrashSceneEvent):void {
+            var crashing:IGameView = e.target as IGameView;
+            var index:int = drawingCrashScene.indexOf(crashing);
+            if (index != -1) {
+                drawingCrashScene.splice(index, 1);
+                if (drawingCrashScene.length == 0) {
+                    dispatchEvent(new SkipStageEvent(SkipStageEvent.UNSKIP_STAGE, GameLoopStage.MOVE));
+                    dispatchEvent(new SkipStageEvent(SkipStageEvent.UNSKIP_STAGE, GameLoopStage.DRAW));
+
+                    forEachGameView(refreshView);
+                }
+            }
+
         }
     }
 }

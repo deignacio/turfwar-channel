@@ -18,20 +18,19 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
-package com.litl.snake.view {
-    import com.litl.helpers.view.ViewBase;
-    import com.litl.snake.event.CrashSceneEvent;
+package com.litl.snake.event {
+    import flash.events.Event;
 
-    import flash.events.IEventDispatcher;
+    public class CrashSceneEvent extends Event {
+        public static const BEGIN:String = "begin";
+        public static const END:String = "end";
 
-    [Event(name=CrashSceneEvent.BEGIN, type="com.litl.snake.event.CrashSceneEvent")]
-    [Event(name=CrashSceneEvent.END, type="com.litl.snake.event.CrashSceneEvent")]
+        public function CrashSceneEvent(type:String) {
+            super(type);
+        }
 
-    public interface IGameView extends IEventDispatcher {
-        function set view(value:ViewBase):void;
-        function clear():void;
-        function drawMove():void;
-        function refresh():void;
-        function drawCrash():void;
+        override public function clone():Event {
+            return new CrashSceneEvent(type);
+        }
     }
 }
