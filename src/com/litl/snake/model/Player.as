@@ -32,6 +32,9 @@ package com.litl.snake.model {
         private var _dir:String = null;
         public var position:PlayerPosition = new PlayerPosition();
 
+        public var crashCount:int = 0;
+        public var causedCount:int = 0;
+
         public function Player(id:int) {
             super();
 

@@ -30,6 +30,7 @@ package {
     import com.litl.snake.view.GameViewManager;
     import com.litl.snake.view.OptionsView;
     import com.litl.snake.view.PauseOverlay;
+    import com.litl.snake.view.Scoreboard;
 
     public class SnakeChannel extends BaseChannel {
         public static const CHANNEL_ID:String = "snake-channel";
@@ -71,6 +72,9 @@ package {
 
             var optionsView:OptionsView = new OptionsView(gameLoop, model);
             pauseOverlay.addChildForViews(optionsView, [focusView]);
+
+            var scoreboard:Scoreboard = new Scoreboard(model);
+            pauseOverlay.addChildForViews(scoreboard, [focusView, channelView]);
         }
 
         override protected function connectToService():void {
