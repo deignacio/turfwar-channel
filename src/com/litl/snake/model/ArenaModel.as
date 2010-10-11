@@ -27,7 +27,7 @@ package com.litl.snake.model {
 
     public class ArenaModel {
         private var _size:ArenaSize = null;
-        private var wrap:ArenaWrap;
+        public var wrap:ArenaWrap;
         private var spots:Dictionary;
 
         public function ArenaModel(size:ArenaSize, wrap:ArenaWrap) {
