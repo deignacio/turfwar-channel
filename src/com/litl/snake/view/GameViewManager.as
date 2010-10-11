@@ -22,9 +22,15 @@ package com.litl.snake.view {
     import com.litl.helpers.view.ViewBase;
     import com.litl.snake.controls.IGameLoopMember;
     import com.litl.snake.enum.GameLoopStage;
+    import com.litl.snake.event.SkipStageEvent;
     import com.litl.snake.model.GameModel;
 
-    public class GameViewManager implements IGameLoopMember {
+    import flash.events.EventDispatcher;
+
+    [Event(type=SkipStageEvent.SKIP_STAGE, name="com.litl.snake.event.SkipStageEvent")]
+    [Event(type=SkipStageEvent.UNSKIP_STAGE, name="com.litl.snake.event.SkipStageEvent")]
+
+    public class GameViewManager extends EventDispatcher implements IGameLoopMember {
         protected var model:GameModel;
         protected var gameViews:Array;
         protected var _view:ViewBase;

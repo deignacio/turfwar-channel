@@ -21,6 +21,7 @@
 package com.litl.snake.controls {
     import com.litl.snake.enum.GameLoopStage;
     import com.litl.snake.enum.GameSpeed;
+    import com.litl.snake.event.SkipStageEvent;
 
     import flash.events.TimerEvent;
     import flash.utils.Dictionary;
@@ -31,9 +32,11 @@ package com.litl.snake.controls {
         private var timer:Timer;
         private var members:Dictionary;
         private var currentStage:String;
+        private var skipStages:Array;
 
         public function GameLoop(speed:GameSpeed) {
             members = new Dictionary();
+            skipStages = new Array();
 
             timer = new Timer(0, 0);
             timer.addEventListener(TimerEvent.TIMER, onTimer, false, 0, true);
@@ -83,11 +86,18 @@ package com.litl.snake.controls {
                     tier.push(member);
                 }
             }
+
+            member.addEventListener(SkipStageEvent.SKIP_STAGE, onSkipStage, false, 0, true);
+            member.addEventListener(SkipStageEvent.UNSKIP_STAGE, onUnskipStage, false, 0, true);
         }
 
         protected function onTimer(e:TimerEvent):void {
             for (var i:int = 0; i < GameLoopStage.ALL_STAGES.length; i++) {
                 currentStage = GameLoopStage.ALL_STAGES[i];
+                if (skipStages.indexOf(currentStage) != -1) {
+                    continue;
+                }
+
                 var tier:Array = members[currentStage];
                 if (tier != null) {
                     tier.forEach(onStage);
@@ -97,6 +107,19 @@ package com.litl.snake.controls {
 
         protected function onStage(member:IGameLoopMember, index:int, arr:Array):void {
             member.onStage(currentStage);
+        }
+
+        protected function onSkipStage(e:SkipStageEvent):void {
+            if (skipStages.indexOf(e.stage) == -1) {
+                skipStages.push(e.stage);
+            }
+        }
+
+        protected function onUnskipStage(e:SkipStageEvent):void {
+            var index:int = skipStages.indexOf(e.stage);
+            if (index != -1) {
+                skipStages.splice(index, 1);
+            }
         }
     }
 }

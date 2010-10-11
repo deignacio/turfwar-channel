@@ -18,19 +18,23 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 * IN THE SOFTWARE.
 */
-package com.litl.snake.controls {
-    import com.litl.snake.event.SkipStageEvent;
+package com.litl.snake.event {
+    import flash.events.Event;
 
-    import flash.events.IEventDispatcher;
+    public class SkipStageEvent extends Event {
+        public static const SKIP_STAGE:String = "skip-stage";
+        public static const UNSKIP_STAGE:String = "unskip-stage";
 
-    [Event(type=SkipStageEvent.SKIP_STAGE, name="com.litl.snake.event.SkipStageEvent")]
-    [Event(type=SkipStageEvent.UNSKIP_STAGE, name="com.litl.snake.event.SkipStageEvent")]
+        public var stage:String;
 
-    /**
-     * specifies the interface for an object to participate in the game loop
-     */
-    public interface IGameLoopMember extends IEventDispatcher {
-        function get stages():Array;
-        function onStage(stage:String):void;
+        public function SkipStageEvent(type:String, stage:String) {
+            super(type);
+
+            this.stage = stage;
+        }
+
+        override public function clone():Event {
+            return new SkipStageEvent(type, stage);
+        }
     }
 }
