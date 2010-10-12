@@ -43,15 +43,22 @@ package com.litl.snake.controls {
         public function PlayerDirectionKeypad(accel:Accelerometer) {
             super(accel);
 
+            // register the "up" or "north" button
             this.registerButton(new KeypadButtonBase(PlayerDirection.NORTH,
                 [ new KeypadButtonInterval(AccelerometerAxis.Y,
                     MIN_THRESHOLD, MAX_THRESHOLD) ]));
+
+            // register the "down"/"south" button
             this.registerButton(new KeypadButtonBase(PlayerDirection.SOUTH,
                 [ new KeypadButtonInterval(AccelerometerAxis.Y,
                 -1 * MAX_THRESHOLD, -1 * MIN_THRESHOLD) ]));
+
+            // right/east
             this.registerButton(new KeypadButtonBase(PlayerDirection.EAST,
                 [ new KeypadButtonInterval(AccelerometerAxis.X,
                     MIN_THRESHOLD, MAX_THRESHOLD) ]));
+
+            // left/west
             this.registerButton(new KeypadButtonBase(PlayerDirection.WEST,
                 [ new KeypadButtonInterval(AccelerometerAxis.X,
                     -1 * MAX_THRESHOLD, -1 * MIN_THRESHOLD) ]));

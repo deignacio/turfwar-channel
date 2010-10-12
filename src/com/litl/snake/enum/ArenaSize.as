@@ -20,15 +20,25 @@
 */
 package com.litl.snake.enum {
     public class ArenaSize {
+        /** large.  ~6pixel radius at 1280x800 */
         public static const LARGE:ArenaSize = new ArenaSize("large", 133, 213);
+
+        /** medium. */
         public static const MEDIUM:ArenaSize = new ArenaSize("medium", 90, 144);
         public static const SMALL:ArenaSize = new ArenaSize("small", 50, 80);
 
         public static const ALL_SIZES:Array = [ LARGE, MEDIUM, SMALL ];
 
+        /** the name of the size */
         public var name:String;
+
+        /** the rows/height dimension */
         public var rows:int;
+
+        /** cols/width of the arena */
         public var cols:int;
+
+        /** a convenient precalculation of the number of spots in the arena */
         public var numSpots:int;
 
         public function ArenaSize(name:String, rows:int, cols:int) {
@@ -38,6 +48,7 @@ package com.litl.snake.enum {
             this.numSpots = rows * cols;
         }
 
+        /** converts to string, mostly used for the options list */
         public function toString():String {
             return name;
         }

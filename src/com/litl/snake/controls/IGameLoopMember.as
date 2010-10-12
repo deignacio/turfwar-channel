@@ -23,14 +23,27 @@ package com.litl.snake.controls {
 
     import flash.events.IEventDispatcher;
 
+    /**
+     * emit this event if you want the game loop to skip a certain stage
+     * for a while.  think about if you have a long crash tween or
+     * start up sequence
+     */
     [Event(type=SkipStageEvent.SKIP_STAGE, name="com.litl.snake.event.SkipStageEvent")]
+
+    /**
+     * when you're done doing whatever you needed to do while skipping that
+     * stage, undo it w/unskip stage
+     */
     [Event(type=SkipStageEvent.UNSKIP_STAGE, name="com.litl.snake.event.SkipStageEvent")]
 
     /**
      * specifies the interface for an object to participate in the game loop
      */
     public interface IGameLoopMember extends IEventDispatcher {
+        /** stages that this game loop member participates in */
         function get stages():Array;
+
+        /** the method called during a certain stage in the main loop. */
         function onStage(stage:String):void;
     }
 }

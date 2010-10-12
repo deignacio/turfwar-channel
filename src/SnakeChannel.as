@@ -48,6 +48,7 @@ package {
             super();
         }
 
+        /** @inheritDoc */
         override protected function setup():void {
             gameLoop = new GameLoop(GameSpeed.NORMAL);
 
@@ -61,6 +62,7 @@ package {
             gameLoop.pauseOverlay = pauseOverlay;
         }
 
+        /** @inheritDoc */
         override protected function registerViews():void {
             var cardView:ViewBase = new CardView();
             views[View.CARD] = cardView;
@@ -80,15 +82,26 @@ package {
             pauseOverlay.addChildForViews(scoreboard, [focusView, channelView]);
         }
 
+        /** @inheritDoc */
         override protected function connectToService():void {
             service.connect(CHANNEL_ID, CHANNEL_TITLE, CHANNEL_VERSION, CHANNEL_HAS_OPTIONS);
         }
 
+        /**
+         * sets the title, and hides the card view arrows
+         *
+         * @inheritDoc
+         */
         override protected function handleInitialize(e:InitializeMessage):void {
             service.channelTitle = CHANNEL_TITLE;
             service.channelItemCount = 1;
         }
 
+        /**
+         * toggles pause/unpause of the gameloop
+         *
+         * @inheritDoc
+         */
         override protected function handleGoReleased(e:UserInputMessage):void {
             if (gameLoop.running) {
                 gameLoop.pause();
@@ -97,6 +110,7 @@ package {
             }
         }
 
+        /** @inheritDoc */
         override protected function onViewChanged(newView:String, newDetails:String, viewWidth:Number=0, viewHeight:Number=0):void {
             pauseOverlay.view = currentView;
 

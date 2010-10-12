@@ -28,6 +28,9 @@ package com.litl.snake.controls {
     import flash.utils.Dictionary;
     import flash.utils.Timer;
 
+    /**
+     * this needs a super commit
+     */
     public class GameLoop {
         private var _speed:GameSpeed;
         private var timer:Timer;
@@ -46,10 +49,12 @@ package com.litl.snake.controls {
             this.speed = speed;
         }
 
+        /** the rate of the game loop */
         public function get speed():GameSpeed {
             return _speed;
         }
 
+        /** sets the rate of the game loop */
         public function set speed(value:GameSpeed):void {
             if (_speed != value) {
                 _speed = value;
@@ -58,10 +63,20 @@ package com.litl.snake.controls {
             }
         }
 
+        /**
+         * a view to display when the game loop is paused
+         *
+         * @see com.litl.snake.view.PauseOverlay PauseOverlay
+         */
         public function get pauseOverlay():PauseOverlay {
             return _pauseOverlay;
         }
 
+        /**
+         * sets the game loops pause overlay
+         *
+         * @see com.litl.snake.view.PauseOverlay PauseOverlay
+         */
         public function set pauseOverlay(value:PauseOverlay):void {
             if (_pauseOverlay != value) {
                 if (_pauseOverlay != null) {
@@ -75,10 +90,12 @@ package com.litl.snake.controls {
             }
         }
 
+        /** if the game loop is currently running */
         public function get running():Boolean {
             return timer.running;
         }
 
+        /** pause the game loop, shows the pause overlay */
         public function pause():void {
             if (timer.running) {
                 timer.stop();
@@ -89,6 +106,7 @@ package com.litl.snake.controls {
             }
         }
 
+        /** begin the pause overlay unpause countdown */
         public function resume():void {
             if (pauseOverlay != null) {
                 pauseOverlay.unpause();
@@ -97,10 +115,18 @@ package com.litl.snake.controls {
             }
         }
 
+        /** restart the game loop when unpause is complete */
         protected function onUnpause(e:TimerEvent):void {
             timer.start();
         }
 
+        /**
+         * adds the IGameLoopMember to the game loop.
+         *
+         * this means that the member's appropriate stage
+         * logic be executed, and that the member has the ability
+         * to cause the game loop to skip/unskip stages
+         */
         public function addMember(member:IGameLoopMember):void {
             var stages:Array = member.stages;
             var stage:String;
@@ -120,6 +146,7 @@ package com.litl.snake.controls {
             member.addEventListener(SkipStageEvent.UNSKIP_STAGE, onUnskipStage, false, 0, true);
         }
 
+        /** run through the game loop members */
         protected function onTimer(e:TimerEvent):void {
             for (var i:int = 0; i < GameLoopStage.ALL_STAGES.length; i++) {
                 currentStage = GameLoopStage.ALL_STAGES[i];
@@ -134,16 +161,29 @@ package com.litl.snake.controls {
             }
         }
 
+        /** execute a member's logic for the current stage */
         protected function onStage(member:IGameLoopMember, index:int, arr:Array):void {
             member.onStage(currentStage);
         }
 
+        /**
+         * process the skip stage event
+         *
+         * NOTE:  skip/unskip stage events are not refcounted.  this means
+         *     that 5 skips, and then 1 unskip results in an unskipped stage
+         */
         protected function onSkipStage(e:SkipStageEvent):void {
             if (skipStages.indexOf(e.stage) == -1) {
                 skipStages.push(e.stage);
             }
         }
 
+        /**
+         * process the unskip stage event
+         *
+         * NOTE:  skip/unskip stage events are not refcounted.  this means
+         *     that 5 skips, and then 1 unskip results in an unskipped stage
+         */
         protected function onUnskipStage(e:SkipStageEvent):void {
             var index:int = skipStages.indexOf(e.stage);
             if (index != -1) {
